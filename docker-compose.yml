@@ -1,3 +1,6 @@
+###This Docker-compose file creates 3 container ( multi-container) ####
+###creates 1. jenkins_master 2. jenkins_slave 3. nexus_master      ####
+
 version: "2"
 services:
   master:
@@ -9,13 +12,21 @@ services:
     - JAVA_OPTS=-Xmx2048m
     volumes:
     - jenkins-master:/var/jenkins_home
+    container_name: jenkins_master
+    networks:
+      static:
+        ipv4_address: 172.28.0.3
 
-#  worker:
-#
-#      image: docker.jenkins.slave:1.0
-#       command: -master http://172.18.0.4:8080 -username jenkins -password jenkins
-#       volumes:
-#       - jenkins-worker:/var/jenkins_home/worker
+  worker:
+
+      image: docker.jenkins.slave:1.0
+      command: -master http://172.20.128.3:8080 -username jenkins -password jenkins
+      volumes:
+      - jenkins-worker:/var/jenkins_home/worker
+      container_name: jenkins_slave
+      networks:
+        static:
+          ipv4_address: 172.28.0.2
 
   nexus:
     image: docker.nexus:1.0
@@ -23,9 +34,24 @@ services:
     - "8081:8081"
     volumes:
     - nexus-master:/var/nexus
+    container_name: nexus_master
+    networks:
+      static:
+       ipv4_address: 172.28.0.4
 
 
 volumes:
   jenkins-master:
-#  jenkins-worker:
+  jenkins-worker:
   nexus-master:
+
+networks:
+   static:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+          ip_range: 172.28.0.0/24
+          gateway: 172.28.0.255
+        
+
