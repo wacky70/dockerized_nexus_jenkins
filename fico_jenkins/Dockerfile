@@ -1,4 +1,4 @@
-FROM jenkins:latest
+FROM jenkins:2.60.2
 MAINTAINER "Arindam.Banerjee@fico.com"
 ## we will copy the plugins from the plugins.txt to jenkins directory#
 ## Then set the env variable for Jenkins_home.
